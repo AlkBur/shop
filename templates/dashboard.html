@@ -1,0 +1,86 @@
+{{template "header.html" .}}
+<div class="hero-body p-0" style="align-items:flex-start">
+    <div class="container is-fullheight">
+        <div class="is-flex is-justify-content-center py-2">
+            <h1 id="title" class="title">Список товаров</h1>
+        </div>
+        <div class="b-table pb-2" x-data="{ order: false, ShowHideOpder() { this.OnlyCheck = ! this.OnlyCheck } }">
+            <div class="table-wrapper has-mobile-cards">
+                <table class="table is-fullwidth is-striped is-hoverable is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Товар</th>
+                            <th>Цена</th>
+                            <th>Количество</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ range .prodacts }}
+                        <tr id="{{ .ID }}" x-data="{ check: false }">
+                            <td class="is-image-cell">
+                                <div class="image">
+                                    <img src="/assets/img/diagram-49_24468.png" class="is-rounded">
+                                </div>
+                            </td>
+                            <td data-label="Товар">{{ .Name }}</td>
+                            <td data-label="Цена">{{ .Value }}</td>
+                            <td data-label="Количество">
+                                <div class="input-number">
+                                    <div class="input-number__minus">-</div>
+                                    <input class="input-number__input" type="text" pattern="^[0-9]+$" value="0">
+                                    <div class="input-number__plus">+</div>
+                                </div>
+                                <!-- <input class="input" type="number" value="1" style="width: 7ch"> -->
+                            </td>
+                            <td class="is-actions-cell">
+                                <div class="buttons is-right">
+                                    <button class="button is-small is-primary is-hidden" type="button">
+                                        <span class="icon">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </span>
+                                    </button>
+                                    <button class="button is-small is-primary" type="button"
+                                        x-bind:class="check ? 'is-hidden' : ''" @click="check = true; count++">
+                                        <span class="icon">
+                                            <i class="fa-solid fa-cart-plus"></i>
+                                        </span>
+                                    </button>
+                                    <button class="button is-small is-danger" type="button"
+                                        x-bind:class="check ? '' : 'is-hidden'" @click="check = false; count--">
+                                        <span class="icon">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {{ end }}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="is-flex is-justify-content-center field is-grouped">
+            <p id="send" class="control is-hidden">
+                <button id="send" class="button is-success is-outlined is-fullwidth">
+                    <span class="icon">
+                        <i class="fa-solid fa-truck-fast"></i>
+                    </span>
+                    <span>Оформить заказ</span>
+                </button>
+            </p>
+
+            <p id="return" class="control">
+                <button class="button is-success is-outlined is-fullwidth">
+                    <span class="icon">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </span>
+                    <span>Перейти в оформлению</span>
+                </button>
+            </p>
+        </div>
+    </div>
+</div>
+{{template "modal.html" .}}
+{{template "footer.html" .}}

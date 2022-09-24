@@ -1,0 +1,26 @@
+# Ignore Logs
+log
+*.log
+
+# The file containing environment variables 
+.env
+
+# Ignore IDE specific files
+.vscode/
+
+# Local History for Visual Studio Code
+.history/
+
+# Go file
+go.work
+go.sum
+
+# Ignore DB
+*.db
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib

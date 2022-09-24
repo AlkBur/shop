@@ -1,0 +1,53 @@
+{{define "navbar.html"}}
+
+<nav class="navbar is-primary">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="/assets/img/delivery_man.svg" style="max-height: 2.50rem;">
+    </a>
+
+    <div class="container" style="margin: auto;">
+      <h1 class="title has-text-white">
+        ДСП ТОРГ
+      </h1>
+    </div>
+
+
+
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+      <span></span>
+      <span></span>
+      <span></span>
+    </a>
+  </div>
+
+  <div id="navbarBasicExample" class="navbar-menu">
+    <div class="navbar-end">
+      <div class="navbar-item">
+        {{if .user}}
+        <div class="buttons">
+          <a class="button is-primary" href="/dashboard">
+            <strong>{{.user}}</strong>
+          </a>
+          <a id="cart" class="button" href="#" data-check="false">
+            <span title="Badge top right" class="badge" x-text="count"></span>
+            <i class="fa-solid fa-cart-shopping"></i>
+          </a>
+          <a class="button" href="/logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </a>
+        </div>
+        {{else}}
+        <!-- <div class="buttons">
+          <a class="button is-primary" href="/login">
+            <strong>Войти</strong>
+          </a>
+        </div>  -->
+        {{end}}
+      </div>
+    </div>
+  </div>
+
+</nav>
+
+{{end}}

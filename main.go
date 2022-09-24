@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"path/filepath"
+	"html/template"
 	//"io"
 
 	//"github.com/gin-contrib/sessions"
@@ -22,7 +24,15 @@ import (
 func main() {
 	globals.Log = log.New(os.Stdout, "Shop ", log.Lshortfile)
 
-	err := godotenv.Load()
+	ex, err := os.Executable()
+    if err != nil {
+        globals.Log.Fatal(err)
+    }
+    globals.Path_dir = filepath.Dir(ex)
+
+	globals.EmailTmpl = template.Must(template.ParseFiles(filepath.Join(globals.Path_dir, "templates/email.html")))
+
+	err = godotenv.Load(filepath.Join(globals.Path_dir, ".env"))
 	if err != nil {
 		globals.Log.Fatal("Error loading .env file")
 	}
@@ -64,10 +74,10 @@ func main() {
 	maxBurstSize := 20
 	router.Use(middleware.NewRateLimiter(maxEventsPerSec, maxBurstSize))
 
-	router.StaticFile("/favicon.ico", "./assets/favicon.ico")
-	router.Static("/assets", "./assets")
+	router.StaticFile("/favicon.ico", filepath.Join(globals.Path_dir, "assets/favicon.ico"))
+	router.Static("/assets", filepath.Join(globals.Path_dir, "assets"))
 	//router.LoadHTMLGlob("templates/*.html")
-	router.LoadHTMLGlob("templates/index.html")
+	router.LoadHTMLGlob(filepath.Join(globals.Path_dir, "templates/index.html"))
 	//router.LoadHTMLGlob("templates/email.html")
 
 	//router.Use(sessions.Sessions("session", cookie.NewStore(globals.Secret)))

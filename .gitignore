@@ -14,6 +14,7 @@ log
 # Go file
 go.work
 go.sum
+shop
 
 # Ignore DB
 *.db

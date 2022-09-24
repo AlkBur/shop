@@ -17,5 +17,6 @@ var (
 	AdminPassword = "admin"
 	IsDebug = true
 
-	EmailTmpl = template.Must(template.ParseFiles("templates/email.html"))
+	Path_dir string
+	EmailTmpl *template.Template
 )   

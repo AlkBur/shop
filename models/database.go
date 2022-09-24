@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 	"database/sql"
+	"path/filepath"
 
 	"gorm.io/gorm"
 	"gorm.io/driver/sqlite"
@@ -11,7 +12,7 @@ import (
 )
 
 func Init() (*sql.DB, error) {
-	db, err := gorm.Open(sqlite.Open("base.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(filepath.Join(globals.Path_dir, "base.db")), &gorm.Config{})
 	if err != nil {
         return nil, err
     }

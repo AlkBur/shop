@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"path/filepath"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	retalog "github.com/lestrrat-go/file-rotatelogs"
@@ -13,7 +14,7 @@ import (
 )
 
 func Logger() gin.HandlerFunc {
-	filePath := "log/log"
+	filePath := filepath.Join(globals.Path_dir, "log/log")
 	//linkName := "latest_log.log"
 
 	scr, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE, 0755)

@@ -7,6 +7,6 @@ run-server:
 #	&& go run .	
 
 build-server:
-	CGO_ENABLED=0 go build -ldflags="-w -s" -a -installsuffix -o shop .
+	go build -ldflags="-w -s" -a -installsuffix -o shop .
 #	@cd server/ &&
 #	CGO_ENABLED=0 go build -ldflags="-w -s" -a -installsuffix -o shop .

@@ -86,14 +86,15 @@ func LoginPostHandler() gin.HandlerFunc {
 		}
 		
 		var code int
+		var PriceID int
 		if user.IsAdmin{
 			code = helpers.CheckLogin(user.Email, user.Password)
 		}else{
-			code = models.CheckLogin(user.Email, user.Password)
+			code, PriceID = models.CheckLogin(user.Email, user.Password)
 		}
 
 		if code == globals.SUCCSE {
-			setToken(c, &user)
+			setToken(c, &user, PriceID)
 		} else {
 			c.JSON(http.StatusOK, gin.H{
 				"status":  code,
@@ -105,10 +106,11 @@ func LoginPostHandler() gin.HandlerFunc {
 	}
 }
 
-func setToken(c *gin.Context, user *UserJSON) {
+func setToken(c *gin.Context, user *UserJSON, PriceID int) {
 	j := middleware.NewJWT()
 	claims := middleware.MyClaims{
 		Email: user.Email,
+		Price: PriceID,
 		StandardClaims: jwt.StandardClaims{
 			NotBefore: time.Now().Unix() - 100,
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),

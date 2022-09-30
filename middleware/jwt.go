@@ -30,6 +30,7 @@ func NewJWT() *JWT {
 
 type MyClaims struct {
 	Email string `json:"email"`
+	Price int `json:"price"`
 
 	jwt.StandardClaims
 }
@@ -124,6 +125,7 @@ func JWTAuth() gin.HandlerFunc {
 		}
 
 		c.Set("user", claims.Email)
+		c.Set("price", claims.Price)
 		c.Next()
 	}
 }

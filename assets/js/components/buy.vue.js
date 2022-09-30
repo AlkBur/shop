@@ -66,7 +66,7 @@ const Buy = {
 
       let data = []
       for (const item of this.$store.state.goods) {
-        data.push({name: item.name, id: item.id, value: item.count});
+        data.push({name: item.name, id: item.id, count: item.count, amount: item.amount});
       }
   
       axios.post('/api/buy', data, { headers: { "Authorization": `Bearer ${this.$store.state.user.token}` } })

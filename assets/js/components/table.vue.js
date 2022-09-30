@@ -13,7 +13,7 @@ const Table = {
       <p class="control has-icons-left">
         <input class="input is-primary" type="text" placeholder="Search" v-model="searchString">
         <span class="icon is-left">
-          <i class="fas fa-search" aria-hidden="true"></i>
+          <img src="/assets/img/magnifyingglass.svg" class="image is-16x16" aria-hidden="true">
         </span>
       </p>
     </div>
@@ -25,6 +25,7 @@ const Table = {
                 <th>Товар</th>
                 <th>Цена</th>
                 <th>Количество</th>
+                <th>Сумма</th>
                 <th></th>
             </tr>
         </thead>
@@ -37,29 +38,35 @@ const Table = {
                         <img src="/assets/img/diagram-49_24468.png" class="is-rounded">
                     </div>
                 </td>
-                <td data-label="Товар">{{ item.name }}</td>
-                <td data-label="Цена">{{ item.value }}</td>
+                <td data-label="Наименование">{{ item.name }}</td>
+                <td data-label="Цена" v-if="item.price === 0">По запросу</td>
+                <td data-label="Цена" v-else>{{ item.price }}</td>
+
                 <td data-label="Количество">
                     <div class="input-number">
                         <div class="input-number__minus" @click.stop="onDecrement(item, i)" :class="{ 'is-hidden': item.added }">-</div>
                         <input @keydown="onKeyDown" class="input-number__input input" type="text" pattern="^[0-9]+$" value="0" 
-                            v-model="item.count" :disabled="item.added">
+                            v-model="item.count" :disabled="item.added" v-on:change="onChangeCount(item, i)">
                         <div class="input-number__plus" @click.stop="onIncrement(item, i)" :class="{ 'is-hidden': item.added }">+</div>
                     </div>
                 </td>
+               
+                <td data-label="Сумма" v-if="item.amount === 0">По запросу</td>
+                <td data-label="Сумма" v-else>{{ item.amount }}</td>
+
                 <td class="is-actions-cell">
                     <div class="buttons is-right">
                         <button v-show="!item.added" class="button is-small is-primary" type="button"
-                        @click.stop="onAddItem(item, i)">
+                            @click.stop="onAddItem(item, i)">
                             <span class="icon">
-                                <i class="fa-solid fa-cart-plus"></i>
+                                <img src="/assets/img/shopping_basket.svg" class="image is-fullwidth svg-white">
                             </span>
                             <span>Купить</span>
                         </button>
                         <button v-show="item.added" class="button is-small is-danger" type="button" 
-                        @click.stop="onDelItem(item, i)">
+                            @click.stop="onDelItem(item, i)">
                             <span class="icon">
-                                <i class="fa-solid fa-trash"></i>
+                                <img src="/assets/img/delete.svg" class="image is-16x16 svg-white">
                             </span>
                             <span>Удалить</span>
                         </button>
@@ -99,9 +106,11 @@ const Table = {
                             if (v) {
                                 item.added = true
                                 item.count = v.count
+                                item.amount = v.amount
                             } else {
                                 item.added = false; 
                                 item.count = 0;
+                                item.amount = 0;
                             }                           
                         }
                         this.items = items;
@@ -150,6 +159,9 @@ const Table = {
             item.added = false
             this.$store.dispatch("deleteGood", item.id)
             this.$emit('change');
+            if (this.isOrder) {
+                this.items.splice(this.items.findIndex(v => v.id === item.id), 1)
+            }
         },
         showSearch() {
             return !this.message && !this.isOrder
@@ -175,9 +187,8 @@ const Table = {
                 }
             }
         },
-        onSearch(value) {
-             console.log(value)
-        //     this.searchQuery = value;
+        onChangeCount(item, index) {
+            item.amount = Math.floor(item.count * item.price * 100) / 100;
         }
     }
 }

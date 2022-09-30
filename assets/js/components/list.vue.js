@@ -31,17 +31,16 @@ const List = {
       <div class="is-flex is-justify-content-center field is-grouped" @click="hideOrder()">
             
         <transition name="fade">
-        <div class="order-bar-container" v-if="this.isShowOrder" >
-        
+          <div class="order-bar-container" v-if="this.isShowOrder" >
+          
               <div class="order-bar-content">
                   <img class="image is-32x32" src="/assets/img/delivery_man.svg" alt="">
-                  <p class="font-light">Cумму заказа {{orderAmount}}</p>
+                  <p class="font-light">Итого количество {{orderCount}}</p>
                   <div>
                       <button class="button is-primary" @click.prevent.stop="$router.push('/order')">Корзина</button>
                   </div>
               </div>
-          
-        </div>
+          </div>
         </transition>
 
       </div>
@@ -49,9 +48,19 @@ const List = {
       <div class="link-setting is-hidden-desktop">
       <ul>
         <li>
+          <a id="cart" class="button is-warning" @click.prevent.stop="scrollToTop">
+              <img src="/assets/img/up-arrow.svg" class="image is-32x32">
+          </a>
+        </li>
+        <li class="py-1">
           <a id="cart" class="button is-warning" @click.prevent.stop="$router.push('/order')">
               <span title="Badge top right" class="badge">{{currentCount}}</span>
-              <i class="fa-solid fa-cart-shopping"></i>
+              <img src="/assets/img/shoppayment.svg" class="image is-32x32">
+          </a>
+        </li>
+        <li>
+          <a id="cart" class="button is-warning" @click.prevent.stop="scrollToBottom">
+              <img src="/assets/img/up-arrow.svg" class="image is-32x32" style="transform: rotate(180deg);">
           </a>
         </li>
         
@@ -84,11 +93,24 @@ const List = {
   },
   methods: {
     ShowOrder() {
-      console.log("ShowOrder")
+      //console.log("ShowOrder")
       this.isShowOrder = true;
       setTimeout(() => {
         this.isShowOrder=false;
       }, 2000);
+    },
+    scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      });
+    },
+    scrollToBottom(){
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      })
     }
   }
 }

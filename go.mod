@@ -8,6 +8,7 @@ require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/joho/godotenv v1.4.0
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
+	github.com/lib/pq v1.10.7
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/sirupsen/logrus v1.9.0
 	golang.org/x/time v0.0.0-20220922220347-f3bd1da661af

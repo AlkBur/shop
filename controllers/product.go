@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"net"
 	"crypto/tls"
+	"math"
 	"net/mail"
 	//"encoding/json"
 	"net/http"
 	"net/smtp"
+
 	
 
 	"github.com/gin-gonic/gin"
@@ -26,34 +28,50 @@ func ProdactsPostHandler() gin.HandlerFunc {
 		  return
 		}
 	  
-		//globals.DB.Exec("DELETE FROM Product")
-		globals.DB.Where("1 = 1").Delete(models.Product{})
-		//globals.DB.Delete(&models.Product{})
-		for _, prodact := range input {
-			globals.DB.Create(&prodact)
-		}
+		models.UpdateAllProducts(input)
+		count := models.ProdactsCount()
 
-		var count int64
-		globals.DB.Model(&models.Product{}).Count(&count)
 		c.JSON(http.StatusOK, gin.H{"data": count})
 	}
 }
 
 func ProdactsGetHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var prodacts []models.Product
- 		if err := globals.DB.Order("name asc").Find(&prodacts).Error; err != nil {
+		prodacts, err := models.GetAllProdacts()
+		PriceID := c.MustGet("price").(int)
+
+		out := make([]MailProduct, 0, len(prodacts))
+		for _, item := range prodacts {
+			var price float64
+			if PriceID < len(item.Price) && PriceID>=0 {
+				price = item.Price[PriceID]
+			}
+			out = append(out, MailProduct{
+				Name: item.Name,
+				ID: item.ID,
+				Count: 1,
+				Price: price,
+			})
+		}
+ 		if err != nil {
  		 	c.AbortWithStatus(404)
 		 } else {
- 		 	c.JSON(http.StatusOK, prodacts)
+ 		 	c.JSON(http.StatusOK, out)
  		}
 	}
+}
+
+type MailProduct struct {
+	Name    string `json:"name"`
+	ID string `json:"id"`
+	Count int `json:"count"`
+	Price float64 `json:"price"`
 }
 
 func MailPostHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {	
 		
-		var input []models.Product
+		var input []MailProduct
 		if err := c.ShouldBindJSON(&input); err != nil {
 		  	c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		  	return
@@ -68,12 +86,19 @@ func MailPostHandler() gin.HandlerFunc {
 		}
 			
 		var TotalCount int 
+		var TotalAmount float64 
 		for _, item := range input {
-			TotalCount += item.Value
+			TotalCount += item.Count
+			TotalAmount += math.Round(float64(item.Count) * item.Price * 100) / 100
 		}
 		
 		var body bytes.Buffer
-		if err := globals.EmailTmpl.Execute(&body, gin.H{"Items": input, "TotalCount": TotalCount, "Email": c.MustGet("user").(string)}); err != nil {
+		if err := globals.EmailTmpl.Execute(&body, gin.H{
+				"Items": input, 
+				"TotalCount": TotalCount, 
+				"TotalAmount": TotalAmount, 
+				"Email": c.MustGet("user").(string),
+			}); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
 		}

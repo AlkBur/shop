@@ -1,46 +1,4 @@
-const App = {
-//     template: `
-// <div class="cover-container d-flex w-100 h-100 p-3 flex-column">
-// <header>
-//     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-//         <div class="container-fluid">
-//         <a class="navbar-brand" href="/">ДСП ТОРГ</a>
-//         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-//             <span class="navbar-toggler-icon"></span>
-//         </button>
-//         <div class="collapse navbar-collapse" id="navbarCollapse">
-//             <ul class="navbar-nav me-auto mb-2 mb-md-0">
-//                 <li v-if="currentUser" class="nav-item">
-//                     <a class="nav-link active" aria-current="page" href="/list">
-//                         <i class="fa-solid fa-house"></i>
-//                     </a>
-//                 </li>
-//             </ul>
-//             <form class="d-flex my-auto">
-//                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
-//                     <li v-if="!currentUser" class="nav-item">
-//                         <router-link to="/login" class="nav-link">
-//                             <i class="fa-solid fa-right-to-bracket"></i> Войти
-//                         </router-link>
-//                     </li>
-//                     <li v-if="currentUser" class="nav-item">
-//                         <a class="nav-link" @click.prevent="logOut">
-//                             <i class="fa-solid fa-right-from-bracket"></i> Выйти
-//                         </a>
-//                     </li>
-//                 </ul>     
-//             </form>
-//         </div>
-//         </div>
-//     </nav>
-// </header>
-// <main style="padding-top: 53px">
-//     <div class="container">
-//         <router-view/>
-//     </div>
-// </main>
-// </div>`,
-    
+const App = {  
     template: `
     <section class="hero is-fullheight is-light">
         <div class="hero-head is-info has-background-primary">
@@ -66,7 +24,7 @@ const App = {
                 </div>
 
                 <div id="navMenubd-main" class="navbar-menu" v-bind:class="{ 'is-active': isActive }">
-                <div class="navbar-start">
+                    <div class="navbar-start">
                 </div>
                 <div class="navbar-end">
                     <div class="navbar-item">
@@ -77,19 +35,19 @@ const App = {
 
                             <a v-if="currentUser" id="cart" class="button" @click.prevent.stop="$router.push('/order')">
                                 <span title="Badge top right" class="badge">{{currentCount}}</span>
-                                <i class="fa-solid fa-cart-shopping"></i>
+                                <img src="/assets/img/shoppayment.svg" class="image is-fullwidth">
                             </a>
              
                             <a v-if="currentUser" class="button" @click.prevent.stop="logOut">
                                 <span class="icon">
-                                    <i class="fa-solid fa-right-from-bracket"></i>
+                                    <img src="/assets/img/exit.svg" class="image is-fullwidth">
                                 </span>
                                 <span>Выйти</span>
                             </a>
 
                             <a v-if="!currentUser" class="button" @click.prevent.stop="$router.push('/login')">
                                 <span class="icon">
-                                    <i class="fa-solid fa-right-from-bracket"></i>
+                                    <img src="/assets/img/enter.svg" class="image is-fullwidth">
                                 </span>
                                 <span>Войти</span>
                             </a>

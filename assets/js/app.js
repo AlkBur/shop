@@ -72,17 +72,19 @@ const store = Vuex.createStore({
             state.order.count = 0;
             state.order.amount = 0;
             for (const item of state.goods) {
+                //item.amount = Math.floor(item.value*item.count * 100) / 100; 
                 state.order.count += item.count;
-                state.order.amount += Math.floor(item.value*item.count * 100) / 100;       
+                state.order.amount += item.amount;       
             }
         },
         CLEAR_GOODS(state) {
             state.goods.length = 0
         },
         ADD_GOOD(state, item) {
+            //item.amount = Math.floor(item.value*item.price * 100) / 100; 
             state.goods.push(item)
             state.order.count += item.count;
-            state.order.amount += Math.floor(item.value*item.count * 100) / 100;
+            state.order.amount += item.amount;
         }
     },
     getters: {

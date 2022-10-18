@@ -10,6 +10,7 @@ import (
 	//"encoding/json"
 	"net/http"
 	"net/smtp"
+	"strings"
 
 	
 
@@ -107,10 +108,18 @@ func MailPostHandler() gin.HandlerFunc {
 		from := mail.Address{"", globals.Email}
 		to := mail.Address{"", globals.Email}
 		subj := "Оформление заказа от "+ c.MustGet("user").(string)
+
+		toArray := make([]string, 0, 2)
+		toArray = append(toArray, to.String())
+		to2 := mail.Address{"", c.MustGet("email").(string)}
+		addEmail := to2.String()
+		if addEmail != ""{
+			toArray = append(toArray, addEmail)
+		}
 	
 		headers := make(map[string]string)
 		headers["From"] = from.String()
-		headers["To"] = to.String()
+		headers["To"] = strings.Join(toArray, ",")
 		headers["Subject"] = subj
 		
 		headers["MIME-version"] = "1.0"

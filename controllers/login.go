@@ -5,6 +5,7 @@ import (
 	//"github.com/gin-contrib/sessions"
 
 	"net/http"
+	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +18,7 @@ import (
 )
 
 type UserJSON struct {
-	Email string `json:"email"`
+	Name string `json:"Name"`
 	Password string `json:"password"`
 	IsAdmin bool `json:"admin"`
 }
@@ -71,12 +72,23 @@ func LoginPostHandler() gin.HandlerFunc {
 
 	// 	c.Redirect(http.StatusMovedPermanently, "/dashboard")
 
+		//log.Printf("login: ---------------\n")
+
 		var user UserJSON
-		_ = c.ShouldBindJSON(&user)
+		err := c.ShouldBindJSON(&user)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"status":  globals.ERROR,
+				"message": globals.GetErrMsg(globals.ERROR),
+				"token":   "",
+			})
+			return
+		}
 
-		globals.Log.Printf("user: %v", user)
+		//log.Printf("user: %v\n", user)
+		//globals.Log.Printf("user: %v", user)
 
-		if helpers.EmptyUserPass(user.Email, user.Password) {
+		if helpers.EmptyUserPass(user.Name, user.Password) {
 			c.JSON(http.StatusOK, gin.H{
 				"status":  globals.ERROR_USER_NOT_EXIST,
 				"message": globals.GetErrMsg(globals.ERROR_USER_NOT_EXIST),
@@ -84,21 +96,26 @@ func LoginPostHandler() gin.HandlerFunc {
 			})
 	 		return
 		}
+
+		
 		
 		var code int
 		var PriceID int
+		var email string
+		var userID string
 		if user.IsAdmin{
-			code = helpers.CheckLogin(user.Email, user.Password)
+			code = helpers.CheckLogin(user.Name, user.Password)
 		}else{
-			code, PriceID = models.CheckLogin(user.Email, user.Password)
+			code, PriceID, email, userID = models.CheckLogin(user.Name, user.Password)
+			user.Name = fmt.Sprintf("%s (%s)", user.Name, userID)
 		}
 
 		if code == globals.SUCCSE {
-			setToken(c, &user, PriceID)
+			setToken(c, &user, email, PriceID)
 		} else {
 			c.JSON(http.StatusOK, gin.H{
 				"status":  code,
-				"data":    user.Email,
+				"data":    user.Name,
 				"message": globals.GetErrMsg(code),
 				"token":   "",
 			})
@@ -106,10 +123,11 @@ func LoginPostHandler() gin.HandlerFunc {
 	}
 }
 
-func setToken(c *gin.Context, user *UserJSON, PriceID int) {
+func setToken(c *gin.Context, user *UserJSON, email string, PriceID int) {
 	j := middleware.NewJWT()
 	claims := middleware.MyClaims{
-		Email: user.Email,
+		Name: user.Name,
+		Email: email,
 		Price: PriceID,
 		StandardClaims: jwt.StandardClaims{
 			NotBefore: time.Now().Unix() - 100,
@@ -126,11 +144,12 @@ func setToken(c *gin.Context, user *UserJSON, PriceID int) {
 			"message": globals.GetErrMsg(globals.ERROR),
 			"token":   token,
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  200,
-		"data":    user.Email,
+		"data":    user.Name,
 		"message": globals.GetErrMsg(200),
 		"token":   token,
 	})

@@ -69,7 +69,7 @@ const Buy = {
         data.push({name: item.name, id: item.id, count: item.count, amount: item.amount});
       }
   
-      axios.post('/api/buy', data, { headers: { "Authorization": `Bearer ${this.$store.state.user.token}` } })
+      axios.default.post('/api/buy', data, { headers: { "Authorization": `Bearer ${this.$store.state.user.token}` } })
                 .then((response) => {
                     if (response.data.message) {
                         this.message = response.data.message;

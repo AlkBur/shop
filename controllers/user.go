@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"shop/models"
-	"shop/globals"
 )
 
 func UsersPostHandler() gin.HandlerFunc {
@@ -18,14 +17,8 @@ func UsersPostHandler() gin.HandlerFunc {
 		  return
 		}
 	  
-		globals.DB.Where("1 = 1").Delete(models.User{})
-		//globals.DB.Delete(&models.Product{})
-		for _, user := range input {
-			globals.DB.Create(&user)
-		}
-
-		var count int64
-		globals.DB.Model(&models.User{}).Count(&count)
+		models.UpdateAllUsers(input)
+		count := models.UsersCount()
 		c.JSON(http.StatusOK, gin.H{"data": count})
 	}
 }

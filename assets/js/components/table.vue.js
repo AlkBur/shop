@@ -92,7 +92,7 @@ const Table = {
             this.isLoad = false;
         } else {
             this.isLoad = true;
-            axios.get('/api/prodacts', { headers: { "Authorization": `Bearer ${this.$store.state.user.token}` } })
+            axios.default.get('/api/prodacts', { headers: { "Authorization": `Bearer ${this.$store.state.user.token}` } })
                 .then((response) => {
                     if (response.data.message) {
                         this.message = response.data.message;
@@ -143,7 +143,7 @@ const Table = {
         filteredItems() {
             const filteredItems = this.searchString === ""
                 ? this.items
-                : this.items.filter(wo => Object.values(wo).join("").indexOf(this.searchString) !== -1);
+                : this.items.filter(wo => Object.values(wo).join("").toLowerCase().indexOf(this.searchString.toLowerCase()) !== -1);
             return filteredItems;
         },
     },

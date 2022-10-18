@@ -7,6 +7,8 @@ import (
 )
 
 func CheckLogin(username, password string) int {
+	//globals.Log.Printf("find name: %v; password: %v\n", username, password)
+
 	if username==globals.AdminLogin {
 		if password==globals.AdminPassword {
 			return globals.SUCCSE

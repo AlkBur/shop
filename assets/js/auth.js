@@ -2,7 +2,7 @@ const API_URL = '/'
 
 const AuthService = {
     login(user) {
-      return axios
+      return axios.default
         .post(API_URL + 'login', user)
         .then(response => {
           if (response.data.token) {

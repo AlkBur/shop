@@ -5,28 +5,30 @@ import(
 )
 
 type User struct {
-	Name    string `json:"name"`
-	Email    string `json:"email" gorm:"primaryKey"`
-	ID string `json:"id" gorm:"primary_key"`
+	Name    string `json:"name" gorm:"primaryKey"`
+	Email    string `json:"email"`
+	ID string `json:"id"`
 	Password string `json:"password"`
 	PriceID int `json:"price"`
 }
 
-func CheckLogin(username string, password string) (int, int) {
+func CheckLogin(username string, password string) (int, int, string, string) {
 	var user User
-	globals.DB.Where("email = ?", username).First(&user)
+	//globals.Log.Printf("find name: %v; password: %v\n", username, password)
+
+	globals.DB.Where("name = ?", username).First(&user)
 
 	//PasswordErr = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if user.ID == "" {
-		return globals.ERROR_USER_NOT_EXIST, 0
+		return globals.ERROR_USER_NOT_EXIST, 0, "", ""
 	}
 	if user.Password != password {
-		return globals.ERROR_PASSWORD_WRONG, 0
+		return globals.ERROR_PASSWORD_WRONG, 0, "", ""
 	}
-	return globals.SUCCSE, user.PriceID
+	return globals.SUCCSE, user.PriceID, user.Email, user.ID
 }
 
-func UpdateAllUsers(input []Product) {
+func UpdateAllUsers(input []User) {
 	globals.DB.Where("1 = 1").Delete(User{})
 	//globals.DB.Delete(&User{})
 	for _, user := range input {

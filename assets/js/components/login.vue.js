@@ -52,7 +52,7 @@ const Login = {
           <form @submit.prevent.stop="handleLogin">
             <div class="field">
               <div class="control">
-                <input v-model="email" class="input is-large" type="email" placeholder="name@example.com" autofocus="" required>
+                <input v-model="name" class="input is-large" type="text" placeholder="name" autofocus="" required>
               </div>
               <p v-show="AttrEmailMessage" class="is-danger help">Please enter an email address</p>
             </div>
@@ -83,7 +83,7 @@ const Login = {
     return {
       loading: false,
       message: "",
-      email: null,
+      name: null,
       password: null,
       isAdmin: false,
     };
@@ -98,7 +98,7 @@ const Login = {
       
         this.loading = true;
 
-        this.$store.dispatch("login", {email: this.email, password: this.password, admin: this.isAdmin}).then(
+        this.$store.dispatch("login", {name: this.name, password: this.password, admin: this.isAdmin}).then(
           () => {
             this.$router.push("/list");
           },

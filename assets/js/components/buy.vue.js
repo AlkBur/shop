@@ -27,9 +27,13 @@ const Buy = {
           </header>
         <div class="card-content">
 
-        <div class="content">
+        <div v-if="orderAmount != 0" class="content">
           Итого заказано позиций {{currentCount}} на общее количество {{orderCount}} и сумму {{orderAmount}}
         </div>
+        <div v-else class="content">
+          Итого заказано позиций {{currentCount}} на общее количество {{orderCount}}
+        </div>
+
 
      </div>
         <footer class="card-footer">
@@ -66,6 +70,9 @@ const Buy = {
 
       let data = []
       for (const item of this.$store.state.goods) {
+        if (item.count == "" || item.count == 0 || item.count == "0") {
+          continue
+        }
         data.push({name: item.name, id: item.id, count: item.count, amount: item.amount});
       }
   

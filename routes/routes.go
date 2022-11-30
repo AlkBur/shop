@@ -15,10 +15,13 @@ func PublicRoutes(g *gin.RouterGroup) {
 }
 
 func PrivateRoutes(g *gin.RouterGroup) {
-
 	g.GET("/prodacts", controllers.ProdactsGetHandler())
-	g.POST("/users", controllers.UsersPostHandler())
 	g.POST("/prodacts", controllers.ProdactsPostHandler())
+	
+	g.POST("/users", controllers.UsersPostHandler())
+	
 	g.POST("/buy", controllers.MailPostHandler())
 
+	g.GET("/catalogs", controllers.CatalogsGetHandler())
+	g.POST("/catalogs", controllers.CatalogsPostHandler())
 }

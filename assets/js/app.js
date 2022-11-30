@@ -73,8 +73,8 @@ const store = Vuex.createStore({
             state.order.amount = 0;
             for (const item of state.goods) {
                 //item.amount = Math.floor(item.value*item.count * 100) / 100; 
-                state.order.count += item.count;
-                state.order.amount += item.amount;       
+                state.order.count += +item.count;
+                state.order.amount += +item.amount;       
             }
         },
         CLEAR_GOODS(state) {
@@ -83,8 +83,8 @@ const store = Vuex.createStore({
         ADD_GOOD(state, item) {
             //item.amount = Math.floor(item.value*item.price * 100) / 100; 
             state.goods.push(item)
-            state.order.count += item.count;
-            state.order.amount += item.amount;
+            state.order.count += +item.count;
+            state.order.amount += +item.amount;
         }
     },
     getters: {
@@ -98,9 +98,10 @@ const store = Vuex.createStore({
   })
 
 
-const app = Vue.createApp(App)
-app.component('toast-manager', Toast)
-app.component('Table', Table)
-app.use(router)
-app.use(store)
-app.mount('#app')
+const app = Vue.createApp(App);
+app.component('toast-manager', Toast);
+app.component('Table', Table);
+app.component('Catalog', Catalog);
+app.use(router);
+app.use(store);
+app.mount('#app');

@@ -1,5 +1,5 @@
-const Table = {
-    name: "TableComponent",
+const Catalog = {
+    name: "CatalogComponent",
     template: `
     <div class="notification is-danger" v-if="message">
         {{ message }}
@@ -31,12 +31,31 @@ const Table = {
             </tr>
         </thead>
         <tbody>
+
+            <tr v-if="showCloseParent()" class = "has-background-warning has-text-weight-bold" @dblclick="closeCatalog()">
+                <td class="is-image-cell">
+                    <div class="image">
+                        <img src="/assets/img/folder_open.png">
+                    </div>
+                </td>
+                <td colspan="6" data-label="Наименование">Вернуться на один уровень назад</td>
+            </tr>
+            
+            <tr v-for="(item, i) in filteredCatalogs" :key='item.id' @dblclick="showCatalog(item)" class = "has-background-warning-light">
+                <td class="is-image-cell">
+                    <div class="image">
+                        <img src="/assets/img/folder_close.png">
+                    </div>
+                </td>
+                <td colspan="6" data-label="Наименование">{{ item.name }}</td>
+            </tr>
+
             <tr v-for="(item, i) in filteredItems" :key='item.id'>
-                
+                    
 
                 <td class="is-image-cell">
                     <div class="image">
-                        <img src="/assets/img/diagram-49_24468.png" class="is-rounded">
+                        <img src="/assets/img/choice.png">
                     </div>
                 </td>
                 <td data-label="Наименование">{{ item.name }}</td>
@@ -53,7 +72,7 @@ const Table = {
                 </td>
 
                 <td data-label="Unit">{{ item.unit }}</td>
-               
+            
                 <td data-label="Сумма" v-if="item.amount === 0">По запросу</td>
                 <td data-label="Сумма" v-else>{{ item.amount }}</td>
 
@@ -77,6 +96,7 @@ const Table = {
                 </td>
             
             </tr>
+
         </tbody>
     </table>`,
     props: {
@@ -95,60 +115,89 @@ const Table = {
             this.isLoad = false;
         } else {
             this.isLoad = true;
-            axios.default.get('/api/prodacts', { headers: { "Authorization": `Bearer ${this.$store.state.user.token}` } })
-                .then((response) => {
-                    if (response.data.message) {
-                        this.message = response.data.message;
-                        if (response.data.status && response.data.status != 200) {
+            Promise.all([axios.default.get('/api/prodacts', { headers: { "Authorization": `Bearer ${this.$store.state.user.token}` } }),
+                axios.default.get('/api/catalogs', { headers: { "Authorization": `Bearer ${this.$store.state.user.token}` }})])
+                .then((results) => {
+                    if (results[0].data.message || results[1].data.message) {
+                        this.message = results[0].data.message;
+                        if (this.message === "" || this.message === undefined) {
+                            this.message = results[1].data.message;
+                        }
+                        if ((results[0].data.status && results[0].data.status != 200) || (results[1].data.status && results[1].data.status != 200)) {
                             this.$store.dispatch('logout')
                         }
                     } else {
-                        items = response.data;
-                        for (const item of items) {
+                        this.items = results[0].data;
+                        this.catalogs = results[1].data;
+                        for (const item of this.items) {
                             let v = this.$store.getters.findGood(item.id);
+                            item.parent_id = item.parent_id.trim();
                             if (v) {
-                                item.added = true
-                                item.count = v.count
-                                item.amount = v.amount
+                                item.added = true;
+                                item.count = v.count;
+                                item.amount = v.amount;
+                                
                             } else {
-                                item.added = false; 
+                                item.added = false;
                                 item.count = 0;
                                 item.amount = 0;
-                            }                           
+                            }
                         }
-                        this.items = items;
-                        this.message = '';
-                        
+                        for (const item of this.catalogs) {
+                            item.parent_id = item.parent_id.trim();
+                        }
+
+                        this.message = '';   
                     }
                     this.isLoad = false;
-                })
-                .catch((error) => {
-                    this.message =
-                        (error.response &&
-                            error.response.data &&
-                            error.response.data.message) ||
-                        error.message ||
-                        error.toString();
-                    this.isLoad = false;
-                });
+            })
+            .catch((error) => {
+                this.message =
+                    (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                    error.message ||
+                    error.toString();
+                this.isLoad = false;
+            });
         }
       },
     data() {
         return {
             items: [],
+            catalogs: [],
             message: "",
             isLoad: false,
-            searchString: ""
+            searchString: "",
+            catalog: ""
         };
 
     },
     computed: {
         filteredItems() {
-            const filteredItems = this.searchString === ""
-                ? this.items
-                : this.items.filter(wo => Object.values(wo).join("").toLowerCase().indexOf(this.searchString.toLowerCase()) !== -1);
+            let filteredItems = [];
+            if (this.searchString === "") {
+                for (const item of this.items) {
+                    if (item.parent_id===this.catalog) {
+                        filteredItems.push(item)
+                    }
+                }
+            } else {
+                filteredItems = this.items.filter(wo => Object.values(wo).join("").toLowerCase().indexOf(this.searchString.toLowerCase()) !== -1);
+            }
             return filteredItems;
         },
+        filteredCatalogs() {
+            let filteredcatalogs = [];
+            if (this.searchString === "") {
+                for (const item of this.catalogs) {
+                    if (item.parent_id===this.catalog) {
+                        filteredcatalogs.push(item)
+                    }
+                }
+            }
+            return filteredcatalogs;
+        }
     },
     methods: {
         onAddItem(item, index) {
@@ -193,6 +242,21 @@ const Table = {
         },
         onChangeCount(item, index) {
             item.amount = Math.floor(item.count * item.price * 100) / 100;
+        },
+        showCatalog(item) {
+            this.catalog = item.id;
+        },
+        showCloseParent() {
+            return this.catalog !== "";
+        },
+        closeCatalog() {
+            for (const item of this.catalogs) {
+                if (item.id===this.catalog) {
+                    this.catalog = item.parent_id;
+                    return;
+                }
+            }
+            this.catalog = "";
         }
     }
 }

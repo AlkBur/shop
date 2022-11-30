@@ -9,6 +9,8 @@ import (
 type Product struct {
 	Name    string `json:"name"`
 	ID string `json:"id" gorm:"primary_key"`
+	ParentID string `json:"parent_id"`
+	Unit string `json:"unit"`
 	Price pq.Float64Array `json:"price" gorm:"type:double[]"`
 }
 

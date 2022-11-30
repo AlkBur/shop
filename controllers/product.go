@@ -2,19 +2,20 @@ package controllers
 
 import (
 	"bytes"
-	"fmt"
-	"net"
-	"crypto/tls"
+	//"fmt"
+	//"net"
+	//"crypto/tls"
 	"math"
-	"net/mail"
+	//"net/mail"
 	//"encoding/json"
 	"net/http"
-	"net/smtp"
-	"strings"
+	//"net/smtp"
+	//"strings"
 
 	
 
 	"github.com/gin-gonic/gin"
+	gomail "gopkg.in/gomail.v2"
 
 	"shop/models"
 	"shop/globals"
@@ -39,6 +40,11 @@ func ProdactsPostHandler() gin.HandlerFunc {
 func ProdactsGetHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		prodacts, err := models.GetAllProdacts()
+		if err != nil {
+			c.AbortWithStatus(404)
+			return
+	   }
+
 		PriceID := c.MustGet("price").(int)
 
 		out := make([]MailProduct, 0, len(prodacts))
@@ -51,14 +57,13 @@ func ProdactsGetHandler() gin.HandlerFunc {
 				Name: item.Name,
 				ID: item.ID,
 				Count: 1,
+				Unit: item.Unit,
 				Price: price,
+				ParentID: item.ParentID,
 			})
 		}
- 		if err != nil {
- 		 	c.AbortWithStatus(404)
-		 } else {
- 		 	c.JSON(http.StatusOK, out)
- 		}
+
+ 		c.JSON(http.StatusOK, out)
 	}
 }
 
@@ -66,7 +71,9 @@ type MailProduct struct {
 	Name    string `json:"name"`
 	ID string `json:"id"`
 	Count int `json:"count"`
+	Unit string `json:"unit"`
 	Price float64 `json:"price"`
+	ParentID string `json:"parent_id"`
 }
 
 func MailPostHandler() gin.HandlerFunc {
@@ -104,7 +111,32 @@ func MailPostHandler() gin.HandlerFunc {
 			return
 		}
 
+		m := gomail.NewMessage()
+		m.SetHeader("From", globals.Email)
+		m.SetHeader("To", globals.Email)
 
+		cc := c.MustGet("email").(string)
+		if cc != ""{
+			//m.SetAddressHeader("Cc", cc, "Client")
+			//globals.Log.Println("cc:", cc)
+			m.SetHeader("To", globals.Email, cc)
+		}else{
+			m.SetHeader("To", globals.Email)
+		}
+		
+
+		m.SetHeader("Subject", "Оформление заказа от "+ c.MustGet("user").(string))
+		m.SetBody("text/html", body.String())
+	
+		d := gomail.NewDialer("smtp.mail.ru", 465, globals.EmailLogin, globals.EmailPassword)
+	
+		// Send the email to Bob, Cora and Dan.
+		if err := d.DialAndSend(m); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		  	return
+		}
+
+		/*
 		from := mail.Address{"", globals.Email}
 		to := mail.Address{"", globals.Email}
 		subj := "Оформление заказа от "+ c.MustGet("user").(string)
@@ -196,6 +228,7 @@ func MailPostHandler() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
 		}
+		*/
 	
 		c.JSON(http.StatusOK, gin.H{
 			"status":  globals.SUCCSE,

@@ -18,7 +18,7 @@ func Init() (*sql.DB, error) {
     }
 
 	// Auto Migrate
-	db.AutoMigrate(&User{}, &Product{})
+	db.AutoMigrate(&User{}, &Product{}, &Catalog{})
 	
 	sqlDB, _ := db.DB()
 	sqlDB.SetMaxIdleConns(10)

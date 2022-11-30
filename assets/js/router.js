@@ -13,10 +13,16 @@ const routes = [
         component: Login,
     },
     {
-        path: "/list",
+        path: "/catalog",
         name: "list",
         // lazy-loaded
         component: List,
+    },
+    {
+        path: "/list",
+        name: "catalog",
+        // lazy-loaded
+        component: ListCatalog,
     },
     {
         path: "/order",
@@ -29,7 +35,14 @@ const routes = [
         name: "buy",
         // lazy-loaded
         component: Buy,
+    },
+    {
+        path: "/debug",
+        name: "debug",
+        // lazy-loaded
+        component: DebugCatalogComponent,
     }
+
 ];
   
 const router = VueRouter.createRouter({

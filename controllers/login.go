@@ -131,7 +131,7 @@ func setToken(c *gin.Context, user *UserJSON, email string, PriceID int) {
 		Price: PriceID,
 		StandardClaims: jwt.StandardClaims{
 			NotBefore: time.Now().Unix() - 100,
-			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+			ExpiresAt: time.Now().Add(time.Hour * 1).Unix(),
 			Issuer:    "Shop",
 		},
 	}

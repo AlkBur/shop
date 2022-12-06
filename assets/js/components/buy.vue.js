@@ -33,6 +33,7 @@ const Buy = {
         <div v-else class="content">
           Итого заказано позиций {{currentCount}} на общее количество {{orderCount}}
         </div>
+        <textarea class="textarea" placeholder="Введите комментарий к заказу" rows="5" v-model="comment"></textarea>
 
 
      </div>
@@ -60,7 +61,8 @@ const Buy = {
   data() {
       return {
         message: "",
-        isLoad: false
+        isLoad: false,
+        comment: ""
       };
   },
   methods: {
@@ -68,13 +70,14 @@ const Buy = {
 
       this.isLoad = true
 
-      let data = []
+      let data = { prodacts: [], comment: this.comment}
       for (const item of this.$store.state.goods) {
         if (item.count == "" || item.count == 0 || item.count == "0") {
           continue
         }
-        data.push({name: item.name, id: item.id, count: item.count, amount: item.amount});
+        data.prodacts.push({name: item.name, id: item.id, count: item.count, amount: item.amount});
       }
+
   
       axios.default.post('/api/buy', data, { headers: { "Authorization": `Bearer ${this.$store.state.user.token}` } })
                 .then((response) => {

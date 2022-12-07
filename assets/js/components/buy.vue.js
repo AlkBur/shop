@@ -38,8 +38,8 @@ const Buy = {
 
      </div>
         <footer class="card-footer">
-          <a class="card-footer-item" @click.prevent.stop="$router.push('/list')">Вернуться к списку товаров</a>
-          <a class="card-footer-item has-background-warning" @click.prevent.stop="SendEmail">Отправить заказ</a>
+          <a class="card-footer-item has-background-light has-text-centered" @click.prevent.stop="$router.push('/list')">Вернуться к списку товаров</a>
+          <a :disabled="isLoad" :class="{ 'is-hidden': isLoad }" class="card-footer-item has-background-warning" @click.prevent.stop="SendEmail" style="border: 1px solid #91C9FF;">Отправить заказ</a>
         </footer>
       </div>
 
@@ -59,7 +59,7 @@ const Buy = {
       },
   },
   data() {
-      return {
+    return {
         message: "",
         isLoad: false,
         comment: ""
@@ -67,6 +67,7 @@ const Buy = {
   },
   methods: {
     SendEmail() {
+      if (this.isLoad) return;
 
       this.isLoad = true
 
@@ -84,14 +85,14 @@ const Buy = {
                     if (response.data.message) {
                         this.message = response.data.message;
                         if (response.data.status && response.data.status != 200) {
-                            this.$store.dispatch('logout')
+                          this.$store.dispatch('logout')
                         } else if (response.data.status && response.data.status == 200) {
                           this.$store.dispatch('clearGoods')
                         }
                     } else {
-                        this.message = 'Отправка не удалась. Попробуйте отправить еще раз'; 
+                      this.message = 'Отправка не удалась. Попробуйте отправить еще раз';
+                      this.isLoad = false;
                     }
-                    this.isLoad = false;
                 })
                 .catch((error) => {
                     this.message =
